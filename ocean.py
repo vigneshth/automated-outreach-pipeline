@@ -6,6 +6,9 @@ load_dotenv()
 #Extract the token from the environment
 API_KEY = os.getenv("OCEAN_API_KEY")
 
+if not API_KEY:
+    raise ValueError("OCEAN_API_KEY not found in .env")
+
 #this is the url we are going to send request for data
 
 url = "https://api.ocean.io/v3/search/companies"
@@ -35,6 +38,11 @@ response = requests.post(
 )
 #status 
 print("Status:", response.status_code)
+
+if response.status_code != 200:
+    print("API Error:", response.text)
+    exit()
+
 #since the response in json format we are converting them into the python dictonaries and list
 data = response.json()
 companies_list = []
@@ -42,17 +50,24 @@ companies_list = []
 for item in data["companies"]:
     company = item["company"]
 
+    industry = (
+        company["industries"][0]
+        if company.get("industries")
+        else "Unknown"
+    )
+
     print(
         company["name"],
         "-",
         company["domain"],
         "-",
-        company["industries"][0]
+        industry
     )
+
     companies_list.append({
-    "name": company["name"],
-    "domain": company["domain"],
-    "industry": company["industries"][0]
+        "name": company["name"],
+        "domain": company["domain"],
+        "industry": industry
     })
 
 import pandas as pd
@@ -64,3 +79,107 @@ print(df)
 df.to_csv("companies.csv", index=False)
 
 print("CSV file created successfully")
+
+
+
+"""
+┌─────────────────────┐
+│ Start Program       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Load .env file      │
+│ Get OCEAN_API_KEY   │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Ask User for        │
+│ Seed Domain         │
+│ (e.g. openai.com)   │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Create API Payload  │
+│ with Seed Domain    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Send POST Request   │
+│ to Ocean.io API     │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Receive Response    │
+│ from Ocean.io       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Convert JSON        │
+│ Response to Python  │
+│ Dictionary          │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Create Empty List   │
+│ companies_list      │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ For Each Company    │
+│ in Response         │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Extract             │
+│ Company Name        │
+│ Domain              │
+│ Industry            │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Print Company       │
+│ Details             │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Add Company Data    │
+│ to companies_list   │
+└──────────┬──────────┘
+           │
+           ▼
+      More Companies?
+           │
+      Yes ─┘
+           │
+           ▼
+┌─────────────────────┐
+│ Convert List to     │
+│ Pandas DataFrame    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Save DataFrame as   │
+│ companies.csv       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Print Success       │
+│ Message             │
+└──────────┬──────────┘
+           │
+           ▼
+        End Program
+"""
