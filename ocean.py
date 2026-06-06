@@ -16,13 +16,15 @@ headers = {
     "X-Api-Token": API_KEY,
     "Content-Type": "application/json"
 }
-#filter to extract country with size of only 5 companies
+#filter to extract
+seed_domain = input("Enter company domain: ")
+
 payload = {
     "size": 5,
     "companiesFilters": {
-        "primaryLocations": {
-            "includeCountries": ["us"]
-        }
+        "lookalikeDomains": [
+            seed_domain
+        ]
     }
 }
 #storing that in the response object
