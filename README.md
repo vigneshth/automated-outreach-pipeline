@@ -2,48 +2,37 @@
 
 ## Overview
 
-This project automates the complete B2B outreach workflow using multiple APIs.
+Automated Outreach Pipeline is a Python-based project that automates the process of finding potential business leads from a target company domain.
 
-A user provides a single company domain as input. The pipeline then:
+The pipeline performs the following tasks:
 
-1. Finds similar companies using Ocean.io
-2. Finds decision-makers using Prospeo
-3. Resolves work emails using EazyReach
-4. Sends personalized outreach emails using Brevo
+1. Accepts a company domain as input.
+2. Finds similar companies using Ocean.io.
+3. Extracts decision-makers and key contacts using Prospeo.
+4. Stores lead information in CSV format.
+5. Optionally sends personalized outreach emails using Brevo.
 
-The goal is to create a fully automated outreach engine with minimal human intervention.
+This project demonstrates API integration, data processing, automation workflows, and lead generation techniques.
 
 ---
 
-## Pipeline Flow
+## Features
 
-Seed Domain
-↓
-Ocean.io
-↓
-Similar Companies
-↓
-Prospeo
-↓
-Decision Makers + LinkedIn URLs
-↓
-EazyReach
-↓
-Verified Work Emails
-↓
-Brevo
-↓
-Personalized Outreach Emails
+* Company discovery using Ocean.io
+* Lead generation using Prospeo
+* CSV export of collected leads
+* Automated email outreach using Brevo
+* Modular and reusable Python code
+* Environment variable support using dotenv
 
 ---
 
 ## Technologies Used
 
-* Python
+* Python 3
 * Ocean.io API
 * Prospeo API
-* EazyReach API
-* Brevo API
+* Brevo Email API
 * Pandas
 * Requests
 * Python Dotenv
@@ -52,168 +41,144 @@ Personalized Outreach Emails
 
 ## Project Structure
 
+```text
 automated-outreach-pipeline/
-
+│
+├── main.py
 ├── ocean.py
-
 ├── prospeo.py
-
 ├── brevo.py
-
-├── main.py (to be integrated)
-
 ├── requirements.txt
-
-├── .gitignore
-
+├── companies.csv
+├── all_leads.csv
+├── .env
 └── README.md
-
----
-
-## Stage 1 – Ocean.io
-
-Input:
-
-Company Domain
-
-Example:
-
-openai.com
-
-Output:
-
-companies.csv
-
-Features:
-
-* Ocean.io API integration
-* Similar company discovery
-* CSV export
-* Error handling
-
----
-
-## Stage 2 – Prospeo
-
-Input:
-
-companies.csv
-
-Output:
-
-all_leads.csv
-
-Features:
-
-* Decision-maker extraction
-* CEO / CTO / VP filtering
-* LinkedIn URL collection
-* Rate-limit handling
-* CSV export
-
----
-
-## Stage 3 – EazyReach
-
-Input:
-
-LinkedIn URLs
-
-Output:
-
-Verified work emails
-
-Features:
-
-* Email enrichment
-* Email verification
-* CSV export
-
-Status:
-
-Pending API credits
-
----
-
-## Stage 4 – Brevo
-
-Input:
-
-Verified work emails
-
-Output:
-
-Personalized outreach emails
-
-Features:
-
-* Brevo API integration
-* Verified sender setup
-* Automated email sending
-* Delivery confirmation
-
----
-
-## Environment Variables
-
-Create a .env file:
-
-OCEAN_API_KEY=your_ocean_api_key
-
-PROSPEO_API_KEY=your_prospeo_api_key
-
-EAZYREACH_API_KEY=your_eazyreach_api_key
-
-BREVO_API_KEY=your_brevo_api_key
-
-SENDER_EMAIL=your_verified_sender_email
+```
 
 ---
 
 ## Installation
 
-Install dependencies:
+### Clone Repository
 
+```bash
+git clone https://github.com/vigneshth/automated-outreach-pipeline.git
+cd automated-outreach-pipeline
+```
+
+### Create Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+### Activate Virtual Environment
+
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Linux / Mac:
+
+```bash
+source venv/bin/activate
+```
+
+### Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
+OCEAN_API_KEY=your_ocean_api_key
+PROSPEO_API_KEY=your_prospeo_api_key
+BREVO_API_KEY=your_brevo_api_key
+SENDER_EMAIL=your_email@example.com
+```
 
 ---
 
 ## Running the Project
 
-Current Modules:
-
-python ocean.py
-
-python prospeo.py
-
-python brevo.py
-
-Future End-to-End Execution:
-
+```bash
 python main.py
+```
+
+Example:
+
+```text
+Enter company domain: leadsquared.com
+```
 
 ---
 
-## Error Handling
+## Workflow
 
-The pipeline handles:
+### Stage 1 – Company Discovery
 
-* Missing API keys
-* Missing data fields
-* API rate limits
-* No search results
-* Partial failures
-* Duplicate contacts
+Finds companies similar to the provided domain using Ocean.io.
+
+### Stage 2 – Lead Generation
+
+Searches Prospeo for decision-makers such as:
+
+* CEO
+* CTO
+* Director
+* VP
+* Founder
+
+### Stage 3 – Email Outreach
+
+Sends personalized outreach emails using Brevo.
 
 ---
 
-## Future Improvements
+## Sample Output
 
-* Complete EazyReach integration
-* Build unified main.py pipeline
-* Add safety checkpoint before sending emails
-* Add logging system
-* Add retry mechanism for failed API requests
+```text
+Companies Found : 5
+Contacts Found  : 6
+
+Send Emails? (Y/N): N
+
+Pipeline Finished.
+```
+
+---
+
+## Generated Files
+
+### companies.csv
+
+Contains discovered companies.
+
+### all_leads.csv
+
+Contains generated leads and contact details.
+
+---
+
+## Learning Outcomes
+
+Through this project I learned:
+
+* API integration
+* Lead generation workflows
+* Data extraction and processing
+* CSV automation
+* Email automation
+* Python project structuring
+* Environment variable management
 
 ---
 
@@ -221,4 +186,8 @@ The pipeline handles:
 
 Madhu Vignesh
 
-SDE Intern Assignment Project
+GitHub:
+https://github.com/vigneshth
+
+```
+```
