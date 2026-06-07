@@ -1,6 +1,5 @@
 from ocean import get_companies
 from prospeo import get_leads
-from eazyreach import get_emails
 from brevo import send_emails
 
 
@@ -14,23 +13,33 @@ def main():
         "\nEnter company domain: "
     ).strip()
 
-    # Stage 1
-    companies = get_companies(domain)
+    # Stage 1 - Ocean.io
+    companies = get_companies(
+        domain
+    )
 
     if not companies:
-        print("\nNo companies found.")
+
+        print(
+            "\nNo companies found."
+        )
+
         return
 
-    # Stage 2
-    leads = get_leads(companies)
+    # Stage 2 - Prospeo
+    contacts = get_leads(
+        companies
+    )
 
-    if not leads:
-        print("\nNo leads found.")
+    if not contacts:
+
+        print(
+            "\nNo contacts found."
+        )
+
         return
 
-    # Stage 3
-    contacts = get_emails(leads)
-
+    # Pipeline Summary
     print("\n====================")
     print("PIPELINE SUMMARY")
     print("====================")
@@ -40,13 +49,10 @@ def main():
     )
 
     print(
-        f"Leads Found     : {len(leads)}"
+        f"Contacts Found  : {len(contacts)}"
     )
 
-    print(
-        f"Emails Found    : {len(contacts)}"
-    )
-
+    # Safety Checkpoint
     choice = input(
         "\nSend Emails? (Y/N): "
     )

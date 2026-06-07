@@ -29,11 +29,15 @@ def send_emails(contacts):
 
     for contact in contacts:
 
-        receiver_email = contact.get("email")
+        name = contact.get("Name")
+        company = contact.get("Company")
+        receiver_email = contact.get("Email")
 
         if not receiver_email:
 
-            print("Skipping contact - email not found")
+            print(
+                f"Skipping {name} - email not found"
+            )
 
             continue
 
@@ -50,28 +54,31 @@ def send_emails(contacts):
                 }
             ],
 
-            subject=f"Partnership Opportunity for {contact.get('company', 'Your Company')}",
+            subject=f"Partnership Opportunity for {company}",
 
             html_content=f"""
             <html>
                 <body>
 
-                    <h2>Hello {contact.get('name', 'there')} 👋</h2>
+                    <h2>Hello {name} 👋</h2>
 
                     <p>
-                        I came across {contact.get('company', 'your company')}
-                        and wanted to explore a potential partnership opportunity.
+                        I came across {company}
+                        and wanted to explore a potential
+                        partnership opportunity.
                     </p>
 
                     <p>
-                        We are working on outreach automation solutions that help
-                        teams identify prospects, enrich contact information,
+                        We are working on outreach automation
+                        solutions that help teams identify
+                        prospects, enrich contact information,
                         and automate personalized communication.
                     </p>
 
                     <p>
-                        I would love to connect and discuss whether there may be
-                        opportunities to collaborate.
+                        I would love to connect and discuss
+                        whether there may be opportunities
+                        to collaborate.
                     </p>
 
                     <p>
@@ -92,7 +99,7 @@ def send_emails(contacts):
 
         try:
 
-            response = api_instance.send_transac_email(
+            api_instance.send_transac_email(
                 email
             )
 
@@ -119,15 +126,11 @@ def send_emails(contacts):
 
 if __name__ == "__main__":
 
-    receiver_email = input(
-        "Enter receiver email: "
-    )
-
     contacts = [
         {
-            "name": "Test User",
-            "company": "Test Company",
-            "email": receiver_email
+            "Name": "Test User",
+            "Company": "Test Company",
+            "Email": "test@example.com"
         }
     ]
 

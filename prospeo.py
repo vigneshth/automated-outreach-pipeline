@@ -100,6 +100,7 @@ def get_leads(companies):
                     "Name": person.get("full_name"),
                     "Title": person.get("current_job_title"),
                     "LinkedIn": person.get("linkedin_url"),
+                    "Email": person.get("email", {}).get("email"),
                     "Location":
                         f"{person.get('location', {}).get('city', '')}, "
                         f"{person.get('location', {}).get('state', '')}"
