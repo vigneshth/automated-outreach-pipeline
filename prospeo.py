@@ -11,105 +11,144 @@ API_KEY = os.getenv("PROSPEO_API_KEY")
 if not API_KEY:
     raise ValueError("PROSPEO_API_KEY not found in .env")
 
-url = "https://api.prospeo.io/search-person"
 
-headers = {
-    "X-KEY": API_KEY,
-    "Content-Type": "application/json"
-}
+def get_leads(companies):
 
-companies = pd.read_csv("companies.csv")
+    url = "https://api.prospeo.io/search-person"
 
-print(f"\nSearching {len(companies)} companies...\n")
-
-all_leads = []
-
-for _, row in companies.iterrows():
-
-    company_name = row["name"]
-    company_domain = row["domain"]
-
-    print(f"\nSearching leads for {company_name}")
-
-    payload = {
-        "page": 1,
-        "filters": {
-            "company": {
-                "websites": {
-                    "include": [company_domain]
-                }
-            },
-            "person_seniority": {
-                "include": [
-                    "C-Suite",
-                    "Vice President",
-                    "Director"
-                ]
-            }
-        }
+    headers = {
+        "X-KEY": API_KEY,
+        "Content-Type": "application/json"
     }
 
-    try:
+    print(f"\nSearching {len(companies)} companies...\n")
 
-        response = requests.post(
-            url,
-            headers=headers,
-            json=payload,
-            timeout=30
+    all_leads = []
+
+    for company in companies:
+
+        company_name = company["name"]
+        company_domain = company["domain"]
+
+        print(f"\nSearching leads for {company_name}")
+
+        payload = {
+            "page": 1,
+            "filters": {
+                "company": {
+                    "websites": {
+                        "include": [company_domain]
+                    }
+                },
+                "person_seniority": {
+                    "include": [
+                        "C-Suite",
+                        "Vice President",
+                        "Director"
+                    ]
+                }
+            }
+        }
+
+        try:
+
+            response = requests.post(
+                url,
+                headers=headers,
+                json=payload,
+                timeout=30
+            )
+
+            print(
+                f"{company_name} | Status: {response.status_code}"
+            )
+
+            data = response.json()
+            print("\nResponse Body:")
+            print(data)
+
+            if response.status_code == 429:
+                print(
+                    "Rate limit exceeded. Waiting 10 seconds..."
+                )
+                time.sleep(10)
+                continue
+
+            if data.get("error_code") == "NO_RESULTS":
+                print("No contacts found")
+                continue
+
+            if data.get("error"):
+                print("Error:", data)
+                continue
+
+            results = data.get("results", [])
+
+            for result in results:
+
+                person = result.get("person", {})
+
+                print(
+                    person.get("full_name"),
+                    "-",
+                    person.get("current_job_title")
+                )
+
+                all_leads.append({
+                    "Company": company_name,
+                    "Domain": company_domain,
+                    "Name": person.get("full_name"),
+                    "Title": person.get("current_job_title"),
+                    "LinkedIn": person.get("linkedin_url"),
+                    "Location":
+                        f"{person.get('location', {}).get('city', '')}, "
+                        f"{person.get('location', {}).get('state', '')}"
+                })
+            time.sleep(2)
+
+        except Exception as e:
+
+            print("Error:", e)
+
+    df = pd.DataFrame(all_leads)
+
+    if not df.empty:
+
+        df.drop_duplicates(
+            subset=["LinkedIn"],
+            inplace=True
         )
 
-        print(
-            f"{company_name} | Status: {response.status_code}"
-        )
+    df.to_csv(
+        "all_leads.csv",
+        index=False
+    )
 
-        data = response.json()
+    print("\n==============================")
+    print(f"Saved {len(df)} leads")
+    print("Output file: all_leads.csv")
+    print("==============================")
 
-        if response.status_code == 429:
-            print("Rate limit exceeded. Waiting 10 seconds...")
-            time.sleep(10)
-            continue
+    return all_leads
 
-        if data.get("error_code") == "NO_RESULTS":
-            print("No contacts found")
-            continue
 
-        if data.get("error"):
-            print("Error:", data)
-            continue
+if __name__ == "__main__":
 
-        results = data.get("results", [])
+    companies_df = pd.read_csv(
+        "companies.csv"
+    )
 
-        for result in results:
+    companies = companies_df.to_dict(
+        orient="records"
+    )
 
-            person = result.get("person", {})
+    leads = get_leads(
+        companies
+    )
 
-            all_leads.append({
-                "Company": company_name,
-                "Domain": company_domain,
-                "Name": person.get("full_name"),
-                "Title": person.get("current_job_title"),
-                "LinkedIn": person.get("linkedin_url"),
-                "Location":
-                    f"{person.get('location', {}).get('city', '')}, "
-                    f"{person.get('location', {}).get('state', '')}"
-            })
-
-        time.sleep(2)
-
-    except Exception as e:
-        print("Error:", e)
-
-df = pd.DataFrame(all_leads)
-
-if not df.empty:
-    df.drop_duplicates(subset=["LinkedIn"], inplace=True)
-
-df.to_csv("all_leads.csv", index=False)
-
-print("\n==============================")
-print(f"Saved {len(df)} leads")
-print("Output file: all_leads.csv")
-print("==============================")
+    print(
+        f"\nTotal Leads Found: {len(leads)}"
+    )
 
 
 
