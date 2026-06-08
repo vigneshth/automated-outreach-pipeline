@@ -57,6 +57,9 @@ automated-outreach-pipeline/
 
 ---
 
+<img width="1350" height="900" alt="image" src="https://github.com/user-attachments/assets/a3b88848-0eb7-459d-9413-1871e8068f91" />
+
+
 ## Installation
 
 ### Clone Repository
